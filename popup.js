@@ -64,7 +64,7 @@ async function getMarkedItemsList() {    //console.clear();
     //     'key': '62fcd5410dcd02c63b0ac335',
     //   },
     // };
-
+    console.clear();
     user_buy_orders_url = "https://backpack.tf/api/classifieds/listings/v1?" + new URLSearchParams({
       token: 'Hz8M03vgJpjb9pFEv0xmEA8IRMQjZzGUxMJl3kZ9zTU',
       intent: '0',
@@ -117,20 +117,34 @@ async function getMarkedItemsList() {    //console.clear();
             let user_buy_orders = data.listings;
             let page_number = 1;
             let buy_order_number = 0;
+            console.log("length:", user_buy_orders.length);
+            chrome.storage.sync.get("marked_items", ({ marked_items }) => {
+              for(let i = 0; i < Math.ceil(user_buy_orders.length / 10)  - 1; i++){
+                marked_items.push([]);
+              }
+              chrome.storage.sync.set({ marked_items });
+              console.log(marked_items);
+            });
+            
 
-
-
+            //console.log(data.listings);
             for (let user_buy_order of user_buy_orders) {
               buy_order_number++;
-              chrome.storage.sync.get("marked_items", ({ marked_items }) => {
-                if (buy_order_number % 11 == 0 && marked_items.length < page_number) {
-                  console.log('add dimension');
-                  console.log(marked_items);
-                  chrome.storage.sync.set({ marked_items });
-                  page_number++;
-                };
-              });
-              
+              // await chrome.storage.sync.get("marked_items", ({ marked_items }) => {
+              //   if (marked_items[page_number - 1].length == 10) {
+              //     //console.log('add dimension');
+                  
+              //     marked_items.push([]);
+              //     chrome.storage.sync.set({ marked_items });
+                
+              //   page_number++;
+              //   };
+              // });
+              console.log(buy_order_number);
+              console.log(user_buy_order);
+              if(buy_order_number % 12 == 0){
+                page_number++;
+              }
               let item_sku = user_buy_order.item.name;
               buy_orders_url = "https://backpack.tf/api/classifieds/listings/snapshot?" + new URLSearchParams({
                 key: '62fcd5410dcd02c63b0ac335',
@@ -144,7 +158,7 @@ async function getMarkedItemsList() {    //console.clear();
                   if (response.ok) {
                     return response.json();
                   }
-                  throw new Error('Response was not ok.');
+                  throw new Error('response was not okay');
                 })
                 .then((data) => {
                   buy_orders = data.listings;
@@ -175,18 +189,25 @@ async function getMarkedItemsList() {    //console.clear();
                         return (listing1_price > listing2_price);
                       };
 
-
+                      
                       if (compareListings(buy_order.currencies, user_buy_order.currencies, key_price)) {
-                        console.log("add mark");
+                        //console.log("add mark");
                           chrome.storage.sync.get("marked_items", ({ marked_items }) => {
-                            console.log(marked_items);
+                            //console.log(marked_items);
+                            //console.log(user_buy_order, page_number);
                             marked_items[page_number - 1].push('listing-' + user_buy_order.id);
                             chrome.storage.sync.set({ marked_items });
-                          });       
+                            console.log(marked_items);
+                          });    
+                          
                       }
                       break;
                     };
                   };
+                  
+                })
+                .catch((response) => {
+                  console.log(response.status, response.statusText);
                 });
             };
 
@@ -195,7 +216,7 @@ async function getMarkedItemsList() {    //console.clear();
 
         return data;
       });
-
+      
 }
 
 markItems = () => {

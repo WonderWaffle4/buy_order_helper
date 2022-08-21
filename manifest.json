@@ -1,7 +1,7 @@
 {
-    "name": "Getting Started Example",
-    "description": "Build an Extension!",
-    "version": "1.0",
+    "name": "BackpackTF Helper",
+    "description": "An extension that provides you with several helpful features to imporove your experience with BackpackTF website!",
+    "version": "0.1",
     "manifest_version": 3,
     "background": {
       "service_worker": "background.js"

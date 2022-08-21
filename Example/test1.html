@@ -1,0 +1,17 @@
+<input type="file" id="file-input" />
+<button id="read-button">Read File</button>
+<pre id="file-contents"></pre>
+
+<script>
+	document.querySelector("#read-button").addEventListener('click', function() {
+        console.clear();
+		let file = document.querySelector("#file-input").files[0];
+        console.log(file);
+		let reader = new FileReader();
+		reader.addEventListener('load', function(e) {
+	    		let text = e.target.result;
+	    		document.querySelector("#file-contents").textContent = text;
+		});
+		reader.readAsText(file);
+	});
+</script>
