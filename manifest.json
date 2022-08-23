@@ -22,5 +22,15 @@
       "48": "/images/get_started48.png",
       "128": "/images/get_started128.png"
     },
-    "host_permissions": ["https://backpack.tf/*", "http://backpack.tf/*"]
+    "host_permissions": ["https://backpack.tf/*", "http://backpack.tf/*"],
+    "content_scripts": [{
+      "matches": ["https://backpack.tf/*", "http://backpack.tf/*"],
+      "js": ["get_marked_items_list.js"]
+    }],
+    "web_accessible_resources": [
+      {
+        "resources": ["StyleImages/refresh16.png", "StyleImages/refresh_active16.png"],
+        "matches": ["https://backpack.tf/*", "http://backpack.tf/*"]
+      }
+    ]
   }
