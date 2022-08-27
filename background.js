@@ -77,8 +77,8 @@ markItems = () => {
 
 chrome.runtime.onInstalled.addListener(() => {
   let marked_items = [[]];
-  let api_key = "123123";
-  let token = "123123";
+  let api_key = "62fcd5410dcd02c63b0ac335";
+  let token = "Hz8M03vgJpjb9pFEv0xmEA8IRMQjZzGUxMJl3kZ9zTU=";
   chrome.storage.sync.set({ color });
   chrome.storage.sync.set({ marked_items });
   chrome.storage.sync.set({ api_key });
