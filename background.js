@@ -24,8 +24,8 @@ chrome.webNavigation.onCompleted.addListener(({ tabId }) => {
 
 markItems = () => {
   chrome.storage.local.get("marked_items", ({ marked_items }) => {
-    // let active_button = document.querySelector('.pagination .active').children[0];
-    // let page = active_button.textContent;
+    let active_button = document.querySelector('.pagination .active').children[0];
+    let page = active_button.textContent;
     let page_selector = document.querySelector(".pagination");
     console.log(marked_items);
     if (marked_items[0].length > 0) {
