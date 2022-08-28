@@ -29,7 +29,11 @@
     }],
     "web_accessible_resources": [
       {
-        "resources": ["StyleImages/refresh16.png", "StyleImages/refresh_active16.png"],
+        "resources": ["StyleImages/refresh16.png",
+                      "StyleImages/refresh_active16.png",
+                      "StyleImages/refresh_all16.png",
+                      "StyleImages/refresh_all_active16.png"
+                    ],
         "matches": ["https://backpack.tf/*", "http://backpack.tf/*"]
       }
     ]

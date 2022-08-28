@@ -1,5 +1,7 @@
+refreshButtonAll()
 refreshButton()
 let global_refresh_button = document.getElementById("refreshButton");
+let global_refresh_button_all = document.getElementById("refreshButtonAll");
 
 global_refresh_button.addEventListener("click", async () => {
   await getMarkedItemsList();
@@ -24,24 +26,83 @@ function refreshButton() {
   refresh_button.style.border = 'none';
   let image_url = chrome.runtime.getURL('StyleImages/refresh16.png');
   refresh_button.innerHTML = '<img src=\"' + image_url + '\">';
-  let element = document.querySelectorAll(".panel-heading")[2];
+  let element = document.querySelectorAll(".panel-heading")[1];
   element.insertBefore(refresh_button, element.children[1]);
   refresh_button.append(element.children[2]);
 
   return refresh_button;
 }
 
-refreshButtonOver = (event) => {
+// refreshButtonOver = (event) => {
+//   let element = event.target;
+//   element.src = 'http://127.0.0.1:8887/refresh_active16.png';
+//   element.id = 'mouseover';
+// }
+
+// refreshButtonOut = (event) => {
+//   let element = event.target;
+//   element.src = 'http://127.0.0.1:8887/refresh16.png';
+//   element.id = 'mouseout';
+// }
+
+global_refresh_button_all.addEventListener("click", async () => {
+  await getMarkedItemsList();
+});
+
+global_refresh_button_all.children[0].addEventListener('mouseover', (event) => {
   let element = event.target;
-  element.src = 'http://127.0.0.1:8887/refresh_active16.png';
-  element.id = 'mouseover';
+  let image_url = chrome.runtime.getURL('StyleImages/refresh_all_active16.png');
+  element.src = image_url;
+});
+
+global_refresh_button_all.children[0].addEventListener('mouseout', (event) => {
+  let element = event.target;
+  let image_url = chrome.runtime.getURL('StyleImages/refresh_all16.png');
+  element.src = image_url;
+});
+
+function refreshButtonAll() {
+  let refresh_button = document.createElement("button");
+  refresh_button.id = "refreshButtonAll";
+  refresh_button.style.background = 'none';
+  refresh_button.style.border = 'none';
+  let image_url = chrome.runtime.getURL('StyleImages/refresh_all16.png');
+  refresh_button.innerHTML = '<img src=\"' + image_url + '\">';
+  let element = document.querySelectorAll(".panel-heading")[1];
+  element.insertBefore(refresh_button, element.children[1]);
+  refresh_button.append(element.children[2]);
+
+  return refresh_button;
 }
 
-refreshButtonOut = (event) => {
+global_refresh_button_all.addEventListener("click", async () => {
+  await getMarkedItemsList();
+});
+
+global_refresh_button_all.children[0].addEventListener('mouseover', (event) => {
   let element = event.target;
-  element.src = 'http://127.0.0.1:8887/refresh16.png';
-  element.id = 'mouseout';
-}
+  let image_url = chrome.runtime.getURL('StyleImages/refresh_all_active16.png');
+  element.src = image_url;
+});
+
+global_refresh_button_all.children[0].addEventListener('mouseout', (event) => {
+  let element = event.target;
+  let image_url = chrome.runtime.getURL('StyleImages/refresh_all16.png');
+  element.src = image_url;
+});
+
+// refreshButtonAllOver = (event) => {
+//   let element = event.target;
+//   element.src = 'http://127.0.0.1:8887/refresh_all_active16.png';
+//   element.id = 'mouseover';
+// }
+
+// refreshButtonAllOut = (event) => {
+//   let element = event.target;
+//   element.src = 'http://127.0.0.1:8887/refresh_all16.png';
+//   element.id = 'mouseout';
+// }
+
 
 async function getMarkedItemsList() {
 
@@ -52,6 +113,28 @@ async function getMarkedItemsList() {
 
       console.log('API KEY:', api_key);
       console.log('TOKEN:', token);
+
+      async function fetchRetry(url){
+        delay = (timeout) => {
+          return new Promise(resolve => setTimeout(resolve, timeout));
+        }
+
+
+        let response = await fetch(url);
+        let error = false;
+        if (!response.ok)
+          error = true;
+        let timeout = 10000;
+        while (error) {
+          await delay(timeout);
+          response = await fetch(url);
+          console.log('url:', url, 'timeout:', timeout);
+          if (response.ok) error = false;
+          timeout += 5000;
+        } 
+        return response;
+      }
+
 
       user_buy_orders_url = "https://backpack.tf/api/classifieds/listings/v1?" + new URLSearchParams({
         token: token,
@@ -69,25 +152,32 @@ async function getMarkedItemsList() {
         chrome.storage.sync.set({ marked_items });
       });
       //get key price
-      let response = await fetch(currency_url);
-      if (response.ok) console.log("ok");
-      else console.log("error");
-      let json = await response.json();
-      const key_price = json.response.currencies.keys.price.value;
+      // let response = await fetch(currency_url);
+      // if (response.ok) console.log("ok");
+      // else console.log("error");
+      // let json = await response.json();
+      // const key_price = json.response.currencies.keys.price.value;
+      let response = await fetchRetry(currency_url);
+      let json = await response.json()
+      key_price = json.response.currencies.keys.price.value;
       console.log(key_price);
 
       //get user listings
-      response = await fetch(user_buy_orders_url)
-      if (response.ok) console.log("ok");
-      else console.log("error");
-      json = await response.json();
+      // response = await fetch(user_buy_orders_url)
+      // if (response.ok) console.log("ok");
+      // else console.log("error");
+      // json = await response.json();
+      // const user_buy_orders = json.listings;
+      response = await fetchRetry(user_buy_orders_url);
+      json = await response.json()
       const user_buy_orders = json.listings;
+
       chrome.storage.sync.get("marked_items", ({ marked_items }) => {
         for (let i = 0; i < Math.ceil(user_buy_orders.length / 10) - 1; i++) {
           marked_items.push([]);
         }
         chrome.storage.sync.set({ marked_items });
-        console.log(marked_items);
+        //console.log(marked_items);
       });
 
       let page_number = 1;
@@ -105,11 +195,17 @@ async function getMarkedItemsList() {
           appid: '440',
           token: token,
         });
-        response = await fetch(buy_orders_url)
-        if (response.ok) console.log("ok");
-        else console.log("error");
-        json = await response.json();
+        // response = await fetch(buy_orders_url)
+        // if (response.ok) console.log("ok");
+        // else console.log("buy order error:", response.error);
+        // json = await response.json();
+        // let buy_orders = json.listings;
+        console.log("1", item_sku);
+        response = await fetchRetry(buy_orders_url);
+        console.log("2", item_sku);
+        json = await response.json()
         let buy_orders = json.listings;
+
         for (let buy_order of buy_orders) {
           if (buy_order.intent == 'buy') {
 
@@ -149,7 +245,6 @@ async function getMarkedItemsList() {
         };
         
       };
-
       // .catch(() => {
         //   chrome.storage.sync.get("marked_items", ({ marked_items }) => {
         //     marked_items[page_number - 1].push(['listing-' + user_buy_order.id, 0]);
@@ -157,7 +252,7 @@ async function getMarkedItemsList() {
         //   });
         //   return data;
         // });
-
+      console.log("ANALYZE DONE!!!!!!!!!!ANALYZE DONE!!!!!!!!!!ANALYZE DONE!!!!!!!!!!ANALYZE DONE!!!!!!!!!!");
       chrome.runtime.sendMessage("scanning done", (response) => { });
       return 0;
     });

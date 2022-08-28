@@ -15,7 +15,6 @@ chrome.runtime.onMessage.addListener((response, sender, sendResponse) => {
 });
 
 chrome.webNavigation.onCompleted.addListener(({ tabId }) => {
-
   chrome.scripting.executeScript({
     target: { tabId },
     function: markItems,
@@ -28,7 +27,7 @@ markItems = () => {
     let active_button = document.querySelector('.pagination .active').children[0];
     let page = active_button.textContent;
     let page_selector = document.querySelector(".pagination");
-
+    console.log(marked_items);
     if (marked_items[0].length > 0) {
       let mark = false;
       for (let i = 0; i < Number(page_selector.children[2].children[0].textContent) - 1; i++) {
