@@ -40,27 +40,34 @@ markItems = () => {
         page_selector.children[0].children[0].style.backgroundColor = 'blue';
         page_selector.children[1].children[0].style.backgroundColor = 'blue';
       }
-      mark = false;
+      
       for (let i = 2; i < page_selector.children.length - 2; i++) {
-        if (page_selector.children[i].className == 'active') {
+        if (page_selector.children[i].className == 'active' && marked_items[i - 2].length > 0) {
           page_selector.children[i].children[0].style.backgroundColor = 'red';
         }
-        else {
+        else if (marked_items[i - 2].length > 0) {
           page_selector.children[i].children[0].style.backgroundColor = '#990000';
         }
       }
+      mark = false;
+      for (let i = marked_items.length - 1; i > Number(page_selector.children[page_selector.children.length - 3].children[0].textContent); i--) {
+        if (marked_items[i].length > 0) {
+          mark = true;
+          break;
+        }
+      }
+      if (mark) {
+        page_selector.children[page_selector.children.length - 1].children[0].style.backgroundColor = 'blue';
+        page_selector.children[page_selector.children.length - 2].children[0].style.backgroundColor = 'blue';
+      }
+
 
       if (marked_items[page - 1].length > 0) {
         for (let marked_item of marked_items[page - 1]) {
-          let listing = document.getElementById(marked_item[0]);
+          let listing = document.getElementById(marked_item);
           if (listing.children[0].id != "BackpackTF_Marked_Listing") {
             let inject = document.createElement("div");
-            if (marked_item[1] == 1) {
-              inject.style.backgroundColor = 'red';
-            }
-            else {
-              inject.style.backgroundColor = 'blue';
-            }
+            inject.style.backgroundColor = 'red';
             inject.style.height = "75px";
             inject.style.width = "87px";
             inject.id = "BackpackTF_Marked_Listing";

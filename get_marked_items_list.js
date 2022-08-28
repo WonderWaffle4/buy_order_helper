@@ -180,15 +180,79 @@ async function getMarkedItemsList() {
         //console.log(marked_items);
       });
 
-      let page_number = 1;
-      let buy_order_number = 0;
+      //let page_number = 1;
+      //let buy_order_number = 0;
       //compare every user listing with global
-      for (let user_buy_order of user_buy_orders) {
-        buy_order_number++;
-        if (buy_order_number % 12 == 0) {
-          page_number++;
-        }
-        let item_sku = user_buy_order.item.name;
+      // for (let user_buy_order of user_buy_orders) {
+      //   buy_order_number++;
+      //   if (buy_order_number % 12 == 0) {
+      //     page_number++;
+      //   }
+      //   let item_sku = user_buy_order.item.name;
+      //   buy_orders_url = "https://backpack.tf/api/classifieds/listings/snapshot?" + new URLSearchParams({
+      //     key: api_key,
+      //     sku: item_sku,
+      //     appid: '440',
+      //     token: token,
+      //   });
+      //   // response = await fetch(buy_orders_url)
+      //   // if (response.ok) console.log("ok");
+      //   // else console.log("buy order error:", response.error);
+      //   // json = await response.json();
+      //   // let buy_orders = json.listings;
+      //   console.log("1", item_sku);
+      //   response = await fetchRetry(buy_orders_url);
+      //   console.log("2", item_sku);
+      //   json = await response.json()
+      //   let buy_orders = json.listings;
+
+      //   for (let buy_order of buy_orders) {
+      //     if (buy_order.intent == 'buy') {
+
+
+      //       compareListings = (listing1, listing2, key_price) => {
+      //         let listing1_price = 0;
+      //         let listing2_price = 0;
+
+      //         if (listing1.keys != undefined) {
+      //           listing1_price += key_price * listing1.keys
+      //         };
+
+      //         if (listing1.metal != undefined) {
+      //           listing1_price += listing1.metal;
+      //         };
+
+      //         if (listing2.keys != undefined) {
+      //           listing2_price += key_price * listing2.keys
+      //         };
+
+      //         if (listing2.metal != undefined) {
+      //           listing2_price += listing2.metal;
+      //         };
+
+      //         return (listing1_price > listing2_price);
+      //       };
+
+
+      //       if (compareListings(buy_order.currencies, user_buy_order.currencies, key_price)) {
+      //         chrome.storage.sync.get("marked_items", ({ marked_items }) => {
+      //           marked_items[page_number - 1].push(['listing-' + user_buy_order.id, 1]);
+      //           chrome.storage.sync.set({ marked_items });
+      //         });
+      //       }
+      //       break;
+      //     };
+      //   };
+        
+      // };
+
+      for (let i = 0; i < user_buy_orders.length; i++) {
+        // if (i % 10 == 0 && i != 0) {
+        //   page_number++;
+        // } 
+        let item_sku = user_buy_orders[i].item.name;
+        let page_number = Math.ceil((i + 1) / 10);
+        console.log("page:", page_number, "item:", item_sku);
         buy_orders_url = "https://backpack.tf/api/classifieds/listings/snapshot?" + new URLSearchParams({
           key: api_key,
           sku: item_sku,
@@ -200,9 +264,9 @@ async function getMarkedItemsList() {
         // else console.log("buy order error:", response.error);
         // json = await response.json();
         // let buy_orders = json.listings;
-        console.log("1", item_sku);
+        //console.log("1", item_sku);
         response = await fetchRetry(buy_orders_url);
-        console.log("2", item_sku);
+        //console.log("2", item_sku);
         json = await response.json()
         let buy_orders = json.listings;
 
@@ -234,17 +298,22 @@ async function getMarkedItemsList() {
             };
 
 
-            if (compareListings(buy_order.currencies, user_buy_order.currencies, key_price)) {
+            if (compareListings(buy_order.currencies, user_buy_orders[i].currencies, key_price)) {
               chrome.storage.sync.get("marked_items", ({ marked_items }) => {
-                marked_items[page_number - 1].push(['listing-' + user_buy_order.id, 1]);
+                marked_items[page_number - 1].push('listing-' + user_buy_orders[i].id);
+                console.log("PUSHED\npage:", page_number, "item:", item_sku);
                 chrome.storage.sync.set({ marked_items });
+                
               });
+              break;
             }
+            else
             break;
           };
         };
         
       };
+      
       // .catch(() => {
         //   chrome.storage.sync.get("marked_items", ({ marked_items }) => {
         //     marked_items[page_number - 1].push(['listing-' + user_buy_order.id, 0]);
