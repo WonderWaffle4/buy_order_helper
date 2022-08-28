@@ -146,10 +146,10 @@ async function getMarkedItemsList() {
         key: api_key,
       });
 
-      chrome.storage.sync.get("marked_items", ({ marked_items }) => {
+      chrome.storage.local.get("marked_items", ({ marked_items }) => {
         marked_items.length = 0;
         marked_items = [[]];
-        chrome.storage.sync.set({ marked_items });
+        chrome.storage.local.set({ marked_items });
       });
       //get key price
       // let response = await fetch(currency_url);
@@ -172,11 +172,11 @@ async function getMarkedItemsList() {
       json = await response.json()
       const user_buy_orders = json.listings;
 
-      chrome.storage.sync.get("marked_items", ({ marked_items }) => {
+      chrome.storage.local.get("marked_items", ({ marked_items }) => {
         for (let i = 0; i < Math.ceil(user_buy_orders.length / 10) - 1; i++) {
           marked_items.push([]);
         }
-        chrome.storage.sync.set({ marked_items });
+        chrome.storage.local.set({ marked_items });
         //console.log(marked_items);
       });
 
@@ -251,6 +251,8 @@ async function getMarkedItemsList() {
         //   page_number++;
         // } 
         let item_sku = user_buy_orders[i].item.name;
+        if (item_sku == '') 
+          continue;
         let page_number = Math.ceil((i + 1) / 10);
         console.log("page:", page_number, "item:", item_sku);
         buy_orders_url = "https://backpack.tf/api/classifieds/listings/snapshot?" + new URLSearchParams({
@@ -299,10 +301,10 @@ async function getMarkedItemsList() {
 
 
             if (compareListings(buy_order.currencies, user_buy_orders[i].currencies, key_price)) {
-              chrome.storage.sync.get("marked_items", ({ marked_items }) => {
+              chrome.storage.local.get("marked_items", ({ marked_items }) => {
                 marked_items[page_number - 1].push('listing-' + user_buy_orders[i].id);
                 console.log("PUSHED\npage:", page_number, "item:", item_sku);
-                chrome.storage.sync.set({ marked_items });
+                chrome.storage.local.set({ marked_items });
                 
               });
               break;

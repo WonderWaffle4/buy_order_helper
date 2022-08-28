@@ -23,9 +23,9 @@ chrome.webNavigation.onCompleted.addListener(({ tabId }) => {
 });
 
 markItems = () => {
-  chrome.storage.sync.get("marked_items", ({ marked_items }) => {
-    let active_button = document.querySelector('.pagination .active').children[0];
-    let page = active_button.textContent;
+  chrome.storage.local.get("marked_items", ({ marked_items }) => {
+    // let active_button = document.querySelector('.pagination .active').children[0];
+    // let page = active_button.textContent;
     let page_selector = document.querySelector(".pagination");
     console.log(marked_items);
     if (marked_items[0].length > 0) {
@@ -42,11 +42,11 @@ markItems = () => {
       }
       
       for (let i = 2; i < page_selector.children.length - 2; i++) {
-        if (page_selector.children[i].className == 'active' && marked_items[i - 2].length > 0) {
-          page_selector.children[i].children[0].style.backgroundColor = 'red';
-        }
-        else if (marked_items[i - 2].length > 0) {
-          page_selector.children[i].children[0].style.backgroundColor = '#990000';
+        if (marked_items[Number(page_selector.children[i].children[0].textContent) - 1].length > 0) {
+          if (page_selector.children[i].className == 'active')
+            page_selector.children[i].children[0].style.backgroundColor = 'red';
+          else
+            page_selector.children[i].children[0].style.backgroundColor = '#990000';
         }
       }
       mark = false;
@@ -86,7 +86,7 @@ chrome.runtime.onInstalled.addListener(() => {
   let api_key = "62fcd5410dcd02c63b0ac335";
   let token = "Hz8M03vgJpjb9pFEv0xmEA8IRMQjZzGUxMJl3kZ9zTU=";
   chrome.storage.sync.set({ color });
-  chrome.storage.sync.set({ marked_items });
+  chrome.storage.local.set({ marked_items });
   chrome.storage.sync.set({ api_key });
   chrome.storage.sync.set({ token });
   console.log(marked_items);
