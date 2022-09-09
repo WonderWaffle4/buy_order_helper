@@ -27,7 +27,7 @@ function refreshButton() {
   let image_url = chrome.runtime.getURL('StyleImages/refresh16.png');
   refresh_button.innerHTML = '<img src=\"' + image_url + '\">';
   let element = document.querySelectorAll(".panel-heading")[2];
-  element.insertBefore(refresh_button, element.children[1]);
+  element.insertBefore(refresh_button, element.children[2]);
   refresh_button.append(element.children[2]);
 
   return refresh_button;
@@ -57,7 +57,7 @@ function refreshButtonAll() {
   let image_url = chrome.runtime.getURL('StyleImages/refresh_all16.png');
   refresh_button.innerHTML = '<img src=\"' + image_url + '\">';
   let element = document.querySelectorAll(".panel-heading")[2];
-  element.insertBefore(refresh_button, element.children[1]);
+  element.insertBefore(refresh_button, element.children[2]);
   refresh_button.append(element.children[2]);
 
   return refresh_button;
