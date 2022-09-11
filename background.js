@@ -66,6 +66,7 @@ markItems = () => {
         for (let marked_item of marked_items[page - 1]) {
           let listing = document.getElementById(marked_item);
           if (listing.children[0].id != "BackpackTF_Marked_Listing") {
+            console.log(12341241414141)
             let inject = document.createElement("div");
             inject.style.backgroundColor = 'red';
             inject.style.height = "75px";
